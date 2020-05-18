@@ -2,6 +2,7 @@
 
 import pandas as pd 
 import numpy as np 
+import matplotlib.pyplot as plt
 
 data = pd.read_csv("/home/srujan/Desktop/ML/Linear_Regression/data.csv")
 
@@ -20,8 +21,8 @@ def step_gradient(bi, mi, data, learning_rate):
     for i in range(len(data)):
         x = data.iloc[i, 0]
         y = data.iloc[i, 1]
-        dB += -(2/N) * (y - ((mi * x) + bi))
-        dM += -(2/N) * x * (y - ((mi * x) + bi))
+        dB += -(2/N) * (y - (np.dot(mi , x) + bi))
+        dM += -(2/N) * np.dot(x , (y - (np.dot(mi , x) + bi))
     new_b = bi - (learning_rate * dB)
     new_m = mi - (learning_rate * dM)
     return [new_b, new_m]
@@ -44,3 +45,10 @@ initial_b = 0 # initial y-intercept guess
 initial_m = 0 # initial slope guess
 [b, m] = gradient_descent(data, initial_b, initial_m, learning_rate)
 print("After Gradient descent b = {0}, m = {1}, error = {2}".format(b, m, cost_fn(b, m, data)))
+
+plt.plot(data.iloc[:,0], data.iloc[:,1], '.')
+
+axes = plt.gca()
+x_values = np.array(axes.get_xlim())
+y_values = b + m * x_values
+plt.plot(x_values, y_values, 'r-')
