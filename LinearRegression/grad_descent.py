@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
 
-data = pd.read_csv("/home/srujan/Desktop/ML/Linear_Regression/data.csv")
+data = pd.read_csv("/kaggle/input/distancecycledvscaloriesburned/data.csv")
 
 def cost_fn(b, m, data):
     totalcost = 0
@@ -12,6 +12,7 @@ def cost_fn(b, m, data):
         x = data.iloc[i, 0]
         y = data.iloc[i, 1]
         totalcost += (y - (m * x + b)) ** 2
+    print ("b = ", b, " m = ", m, " avg_cost = ", totalcost /float(len(data)))   #printing the values of b, m, and the average cost helps in getting to know what is happening.
     return totalcost /float(len(data))
 
 def step_gradient(bi, mi, data, learning_rate):
@@ -22,28 +23,26 @@ def step_gradient(bi, mi, data, learning_rate):
         x = data.iloc[i, 0]
         y = data.iloc[i, 1]
         dB += -(2/N) * (y - (np.dot(mi , x) + bi))
-        dM += -(2/N) * np.dot(x , (y - (np.dot(mi , x) + bi))
-    new_b = bi - (learning_rate * dB)
-    new_m = mi - (learning_rate * dM)
-    return [new_b, new_m]
+        dM += -(2/N) * np.dot(x , (y - (np.dot(mi , x) + bi)))
+    bi -= (learning_rate * dB)
+    mi -= (learning_rate * dM)
+    return [bi, mi]
 
-def gradient_descent(data, b0, m0, learning_rate):
+def gradient_descent(data, b0, m0, learning_rate, epochs):
     b = b0
     m = m0
     checker = True
-    while(checker):
-        b_0, m_0 = b,m
-        error_0 = cost_fn(b, m, data)
+    while(epochs):
         [b, m] = step_gradient(b, m, data, learning_rate)
         error_new = cost_fn(b, m, data)
-        if error_new > error_0:
-            checker = False
-    return[b_0,m_0]
+        epochs -= 1
+    return[b,m]
 
 learning_rate = 0.0001
-initial_b = 0 # initial y-intercept guess
-initial_m = 0 # initial slope guess
-[b, m] = gradient_descent(data, initial_b, initial_m, learning_rate)
+epochs = 250                   #number of iterations
+initial_b = np.random.normal() # initial y-intercept guess
+initial_m = np.random.normal() # initial slope guess
+[b, m] = gradient_descent(data, initial_b, initial_m, learning_rate, epochs)
 print("After Gradient descent b = {0}, m = {1}, error = {2}".format(b, m, cost_fn(b, m, data)))
 
 plt.plot(data.iloc[:,0], data.iloc[:,1], '.')
